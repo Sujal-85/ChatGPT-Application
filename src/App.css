@@ -1,9 +1,11 @@
+/* General Styling */
 .App {
   text-align: center;
+  padding: 1rem; /* Add padding for better spacing on smaller screens */
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 30vmin; /* Reduce the size for smaller devices */
   pointer-events: none;
 }
 
@@ -22,10 +24,45 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 1rem; /* Add padding for better spacing */
 }
 
 .App-link {
   color: #61dafb;
+  text-decoration: none; /* Remove underline for cleaner links */
+}
+
+/* Add media query for mobile responsiveness */
+@media (max-width: 768px) {
+  .App-header {
+    font-size: calc(8px + 2vmin); /* Adjust font size for smaller screens */
+    padding: 0.5rem; /* Reduce padding for small screens */
+  }
+
+  .App-logo {
+    height: 20vmin; /* Further reduce logo size for very small screens */
+  }
+
+  .App-link {
+    font-size: 1rem; /* Adjust link font size for better readability */
+  }
+}
+
+/* Add media query for very small screens */
+@media (max-width: 480px) {
+  .App-header {
+    flex-direction: column; /* Ensure proper alignment on very small screens */
+    justify-content: flex-start; /* Adjust alignment */
+    font-size: calc(8px + 1.5vmin); /* Adjust font size */
+  }
+
+  .App-logo {
+    height: 15vmin; /* Further reduce logo size */
+  }
+
+  .App-link {
+    font-size: 0.9rem; /* Make links smaller if necessary */
+  }
 }
 
 @keyframes App-logo-spin {

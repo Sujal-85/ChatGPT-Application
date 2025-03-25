@@ -1,10 +1,21 @@
 import { FaQuestionCircle } from "react-icons/fa";
+
 function Footer() {
-    return (
-      <div className="relative py-4 text-center text-gray-600" style={{ fontSize: "16px" }}>
-        ChatGPT can make mistakes. Check important info.
-        <FaQuestionCircle className="absolute bottom-0 right-0 text-gray-500 text-lg cursor-pointer m-4" />
+  return (
+    <footer className="relative py-3 md:py-4 text-center text-gray-600 text-sm md:text-base">
+      <div className="container mx-auto px-4">
+        <p className="inline-block">
+          ChatGPT can make mistakes. Consider checking important information.
+          <button 
+            aria-label="Learn more about ChatGPT accuracy"
+            className="ml-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            <FaQuestionCircle className="inline align-middle text-lg" />
+          </button>
+        </p>
       </div>
-    );
-  }
-  export default Footer;
+    </footer>
+  );
+}
+
+export default Footer;
