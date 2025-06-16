@@ -9,7 +9,13 @@ const port = process.env.PORT || 3001;
 const upload = multer({ dest: 'uploads/' });
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: 'https://chatgpt-app-rho-ten.vercel.app', // Replace with actual frontend domain
+  methods: ['GET', 'POST'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Chat endpoint
