@@ -10,7 +10,7 @@ const upload = multer({ dest: 'uploads/' });
 
 // Middleware
 const corsOptions = {
-  origin: 'https://chatgpt-app-rho-ten.vercel.app', // Replace with actual frontend domain
+  origin: 'https://ai-assistant-app-nine.vercel.app', // Replace with actual frontend domain
   methods: ['GET', 'POST'],
   credentials: true,
 };
