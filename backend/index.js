@@ -19,6 +19,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Chat endpoint
+app.get('/', (req, res) => {
+  res.send('Backend is working!');
+});
+
+
 app.post('/api/chat', upload.array('attachments'), async (req, res) => {
   try {
     const { message, mode } = req.body;
