@@ -2,14 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 3001;
 const upload = multer({ dest: 'uploads/' });
-
-// Initialize Google Generative AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Middleware
 app.use(cors());
@@ -19,49 +16,68 @@ app.use(express.json());
 app.post('/api/chat', upload.array('attachments'), async (req, res) => {
   try {
     const { message, mode } = req.body;
-    
+
     // Process attachments if any
     const attachmentsInfo = req.files?.map(file => ({
       name: file.originalname,
-      type: file.mimetype
+      type: file.mimetype,
     }));
 
     // Determine system message based on mode
-    const systemMessage = mode === 'reason' 
-      ? "You are an analytical assistant. Provide detailed reasoning for all responses."
+    const systemMessage = mode === 'reason'
+      ? 'You are an analytical assistant. Provide detailed reasoning for all responses.'
       : mode === 'search'
-      ? "You are a research assistant. Provide comprehensive search results."
-      : "You are a helpful assistant.";
+      ? 'You are a research assistant. Provide comprehensive search results.'
+      : 'You are a helpful assistant.';
 
-    // Get the Gemini model - using the correct model name
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro-latest",  // Updated model name
-    });
+    // Verify API key is loaded
+    if (!process.env.OPENROUTER_API_KEY) {
+      throw new Error('OPENROUTER_API_KEY is not set in environment variables.');
+    }
 
-    // Combine system message and user message
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: systemMessage }],
+    // Prepare OpenRouter API request
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'meta-llama/llama-3.1-8b-instruct', // Free-tier compatible model
+        messages: [
+          { role: 'system', content: systemMessage },
+          { role: 'user', content: message },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
         },
-      ],
-    });
+      }
+    );
 
-    const result = await chat.sendMessage(message);
-    const response = await result.response;
-    const text = response.text();
-    
-    res.json({ 
-      reply: text,
-      attachments: attachmentsInfo 
+    // Extract the response text
+    const reply = response.data.choices[0].message.content;
+
+    res.json({
+      reply,
+      attachments: attachmentsInfo,
     });
   } catch (error) {
-    console.error('Gemini Error:', error);
-    res.status(500).json({ 
-      error: "Error processing your request",
-      details: error.message 
-    });
+    console.error('OpenRouter Error:', error);
+    if (error.response?.status === 402) {
+      res.status(402).json({
+        error: 'Payment required. Please add credits or a payment method to your OpenRouter account.',
+        details: error.response?.data?.error?.message || error.message,
+      });
+    } else if (error.response?.status === 401) {
+      res.status(401).json({
+        error: 'Invalid API key. Please verify or regenerate your OpenRouter API key.',
+        details: error.response?.data?.error?.message || error.message,
+      });
+    } else {
+      res.status(500).json({
+        error: 'Error processing your request',
+        details: error.message,
+      });
+    }
   }
 });
 
