@@ -396,7 +396,7 @@ function MainContent() {
       formData.append('mode', activeFeature || 'chat');
       attachments.forEach(file => formData.append('attachments', file));
 
-      const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch('https://chatgpt-application.onrender.com', {
         method: 'POST',
         body: formData,
       });
@@ -436,7 +436,7 @@ function MainContent() {
       formData.append('mode', activeFeature || 'chat');
       userMessage.attachments?.forEach(file => formData.append('attachments', file));
 
-      const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch('https://chatgpt-application.onrender.com', {
         method: 'POST',
         body: formData,
       });
