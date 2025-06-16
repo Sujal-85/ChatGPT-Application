@@ -1,75 +1,28 @@
-/* General Styling */
-.App {
-  text-align: center;
-  padding: 1rem; /* Add padding for better spacing on smaller screens */
+/* Ensure body has no default margin/padding */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 30vmin; /* Reduce the size for smaller devices */
-  pointer-events: none;
+/* Optional: Ensure root container takes full height */
+#root {
+  height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Dark mode styles */
+.dark {
+  background-color: #161616;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-  padding: 1rem; /* Add padding for better spacing */
-}
-
-.App-link {
-  color: #61dafb;
-  text-decoration: none; /* Remove underline for cleaner links */
-}
-
-/* Add media query for mobile responsiveness */
-@media (max-width: 768px) {
-  .App-header {
-    font-size: calc(8px + 2vmin); /* Adjust font size for smaller screens */
-    padding: 0.5rem; /* Reduce padding for small screens */
-  }
-
-  .App-logo {
-    height: 20vmin; /* Further reduce logo size for very small screens */
-  }
-
-  .App-link {
-    font-size: 1rem; /* Adjust link font size for better readability */
-  }
-}
-
-/* Add media query for very small screens */
-@media (max-width: 480px) {
-  .App-header {
-    flex-direction: column; /* Ensure proper alignment on very small screens */
-    justify-content: flex-start; /* Adjust alignment */
-    font-size: calc(8px + 1.5vmin); /* Adjust font size */
-  }
-
-  .App-logo {
-    height: 15vmin; /* Further reduce logo size */
-  }
-
-  .App-link {
-    font-size: 0.9rem; /* Make links smaller if necessary */
-  }
-}
-
-@keyframes App-logo-spin {
+/* Tailwind custom animation for loader (if not in tailwind.config.js) */
+@keyframes bounce {
   from {
-    transform: rotate(0deg);
+    transform: translateY(0);
+    opacity: 0.8;
   }
   to {
-    transform: rotate(360deg);
+    transform: translateY(-8px);
+    opacity: 0.4;
   }
 }
