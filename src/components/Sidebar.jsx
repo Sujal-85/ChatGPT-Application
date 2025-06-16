@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedChatIndex, setSelectedChatIndex] = useState(null); // Track selected chat
+  const [menuOpenIndex, setMenuOpenIndex] = useState(null); // Track which chat's menu is open
+  const menuRefs = useRef([]); // Refs for dropdown menus to handle outside clicks
 
   useEffect(() => {
     const isDesktop = window.innerWidth >= 768; // Tailwind's md breakpoint
@@ -66,6 +68,51 @@ function Sidebar() {
       (chat.response &&
         chat.response.toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  // Handle deleting a chat
+  const handleDeleteChat = (index) => {
+    const newHistory = chatHistory.filter((_, i) => i !== index);
+    setChatHistory(newHistory);
+    localStorage.setItem('chatHistory', JSON.stringify(newHistory));
+
+    // If this was the last chat, refresh the page
+    if (newHistory.length === 0) {
+      window.location.reload();
+      return;
+    }
+
+    // If the deleted chat was selected, select the next available chat
+    if (selectedChatIndex === index) {
+      const nextIndex = index >= newHistory.length ? newHistory.length - 1 : index;
+      setSelectedChatIndex(nextIndex);
+      // Load the next chat
+      window.dispatchEvent(new CustomEvent('loadChat', {
+        detail: {
+          message: newHistory[nextIndex].query,
+          response: newHistory[nextIndex].response || 'No response received'
+        }
+      }));
+    } else if (selectedChatIndex > index) {
+      // If a chat before the selected one was deleted, adjust the selected index
+      setSelectedChatIndex(selectedChatIndex - 1);
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        menuOpenIndex !== null &&
+        menuRefs.current[menuOpenIndex] &&
+        !menuRefs.current[menuOpenIndex].contains(event.target)
+      ) {
+        setMenuOpenIndex(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpenIndex]);
 
   return (
     <>
@@ -311,56 +358,103 @@ function Sidebar() {
 
           {/* Scrollable Chat List Section */}
           {isSidebarOpen && (
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
               <div className="space-y-2">
                 {(isSearching ? filteredChats : chatHistory).map((chat, index) => (
-                  <button
+                  <div
                     key={index}
-                    className={`w-full text-left p-2 rounded-lg transition-colors duration-200 ${
-                      selectedChatIndex === index
-                        ? 'bg-[#eeeeee] dark:bg-[#1f1f1f]'
-                        : 'hover:bg-gray-200 dark:hover:bg-[#1f1f1f]'
-                    }`}
-                    onClick={() => {
-                      setSelectedChatIndex(index);
-                      window.dispatchEvent(
-                        new CustomEvent('loadChat', {
-                          detail: {
-                            message: chat.query,
-                            response: chat.response || 'No response received',
-                          },
-                        })
-                      );
+                    className="relative"
+                    onContextMenu={(e) => {
+                      e.preventDefault();
+                      setMenuOpenIndex(index); // Open menu on right-click
                     }}
-                    aria-label={`Select chat ${index + 1}`}
                   >
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
+                    <button
+                      className={`w-full text-left p-2 rounded-lg transition-colors duration-200 flex justify-between items-center ${
+                        selectedChatIndex === index
+                          ? 'bg-[#eeeeee] dark:bg-[#1f1f1f]'
+                          : 'hover:bg-gray-200 dark:hover:bg-[#1f1f1f]'
+                      }`}
+                      onClick={() => {
+                        setSelectedChatIndex(index);
+                        window.dispatchEvent(
+                          new CustomEvent('loadChat', {
+                            detail: {
+                              message: chat.query,
+                              response: chat.response || 'No response received',
+                            },
+                          })
+                        );
+                      }}
+                      aria-label={`Select chat ${index + 1}`}
+                    >
+                      <div className="flex flex-col gap-1 flex-1">
+                        <div className="flex items-center gap-2">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-message-circle dark:text-white"
+                          >
+                            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                          </svg>
+                          <span className="text-md font-medium truncate text-gray-900 dark:text-white">
+                            {chat.query}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-400 dark:text-gray-500 pl-6">
+                          {chat.timestamp
+                            ? new Date(chat.timestamp).toLocaleString()
+                            : 'Unknown time'}
+                        </div>
+                      </div>
+                      {/* Three-dot button */}
+                      <button
+                        className="p-1 rounded hover:bg-gray-300 dark:hover:bg-[#2A2A2A]"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent chat selection on three-dot click
+                          setMenuOpenIndex(menuOpenIndex === index ? null : index);
+                        }}
+                        aria-label="Chat options"
+                      >
                         <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="24"
-                          height="24"
+                          width="20"
+                          height="20"
                           viewBox="0 0 24 24"
                           fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-message-circle dark:text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="text-gray-500 dark:text-gray-300"
                         >
-                          <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
+                          <circle cx="12" cy="12" r="1" fill="currentColor" />
+                          <circle cx="12" cy="5" r="1" fill="currentColor" />
+                          <circle cx="12" cy="19" r="1" fill="currentColor" />
                         </svg>
-                        <span className="text-md font-medium truncate text-gray-900 dark:text-white">
-                          {chat.query}
-                        </span>
+                      </button>
+                    </button>
+                    {/* Dropdown Menu */}
+                    {menuOpenIndex === index && (
+                      <div
+                        ref={(el) => (menuRefs.current[index] = el)}
+                        className="absolute -right-2 top-16 md:top-12 bg-white dark:bg-[#2A2A2A] shadow-lg rounded-md z-50"
+                      >
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm  text-red-600 hover:rounded-md dark:text-red-400 hover:bg-gray-100 dark:hover:bg-[#3A3A3A]"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteChat(index);
+                          }}
+                        >
+                          Delete
+                        </button>
                       </div>
-                      <div className="text-xs text-gray-400 dark:text-gray-500 pl-6">
-                        {chat.timestamp
-                          ? new Date(chat.timestamp).toLocaleString()
-                          : 'Unknown time'}
-                      </div>
-                    </div>
-                  </button>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
@@ -418,7 +512,7 @@ function Sidebar() {
               border-color: transparent transparent black transparent;
             }
             .dark .tooltip::after {
-              border-color: timestamp transparent black transparent;
+              border-color: transparent transparent black transparent;
             }
           `}</style>
         </div>
