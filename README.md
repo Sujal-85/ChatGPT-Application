@@ -1,9 +1,11 @@
-I have created ChatGPT Static UI.
-
-Website link: https://chat-gpt-ui-flame.vercel.app/
-
-There are Many changes required I will do those changes within next 4-5 days.
+I have created ChatGPT Replica.
 
 Image:
  
-![image](https://github.com/user-attachments/assets/21ba8f48-20ce-4f92-856f-a26a511ce361)
+![image](https://github.com/user-attachments/assets/57620b55-a769-4bd2-9c2b-0c217e2af8ad)
+
+
+![image](https://github.com/user-attachments/assets/2b86428e-1679-4697-9729-ce6be0529139)
+
+
+![image](https://github.com/user-attachments/assets/ce13c9b3-747e-4fed-a3ad-56a0cd69b4d8)
