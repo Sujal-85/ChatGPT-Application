@@ -594,7 +594,7 @@ function MainContent() {
               <div key={index} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                 <div className="flex flex-col">
                   <div
-                    className={`max-w-[90%] sm:max-w-3xl rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
+                    className={`max-w-[100%] sm:max-w-3xl rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
                       message.isUser 
                         ? 'text-black dark:text-white bg-[#eeeeee] dark:bg-[#1f1f1f]' 
                         : 'bg-gray-100 dark:bg-[#1f1f1f] text-gray-800 dark:text-white'

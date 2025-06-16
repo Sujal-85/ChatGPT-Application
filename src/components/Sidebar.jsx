@@ -388,7 +388,7 @@ function Sidebar() {
                       }}
                       aria-label={`Select chat ${index + 1}`}
                     >
-                      <div className="flex flex-col gap-1 flex-1">
+                      <div className="flex flex-col gap-1 flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
