@@ -27,7 +27,9 @@
 
            
 
-**Website Link:**     https://ai-assistant-app-nine.vercel.app
+**Website Link:**     https://ai-assistant-app-nine.vercel.app (Remove Ehanced Protection from chrome/edge/Google beacause it is ChatGPT clone and I keep branding same as an actual ChatGPT.)
+
+
 
 
 **Image:**
