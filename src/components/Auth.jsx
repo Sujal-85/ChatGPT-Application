@@ -65,8 +65,8 @@ function Auth({ setUser }) {
               <div className="social-buttons">
                 <GoogleOAuthProvider
                   clientId={
-                    process.env.REACT_APP_GOOGLE_CLIENT_ID ||
-                    '1007779600580-7gfll1ici5ms1s0sugft8edphmocm4l9.apps.googleusercontent.com'
+                    process.env.REACT_APP_GOOGLE_CLIENT_ID
+                    
                   }
                 >
                   <GoogleLogin
